@@ -1,17 +1,18 @@
 version: "3"
 services:
-    mysql_autobackup:
+    folder_autobackup:
         build:
             context: ./
             args:
-                FREQUENCY: ${MYSQL_BKP_FREQUENCY}
-        image: mysql-autobkp:latest
+                FREQUENCY: ${BKP_FREQUENCY}
+        image: folder_autobkp:latest
         container_name: ${CONTAINER_NAME}
         labels:
             - traefik.enable=false
         env_file: .env
         volumes:
             - /etc/localtime:/etc/localtime:ro
-            - ${MYSQL_BACKUP_LOCATION}:/opt/mysql/backup
+            - ${BACKUP_LOCATION}:/opt/backup
+            - ${DATA_LOCATION}:/opt/data
         command: crond -f -d 8
         restart: always

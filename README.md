@@ -1,4 +1,4 @@
-# mysql-autobackup
+# files-autobackup
 ## Setup Instructions
 ### Install Docker
 1. First, in order to ensure the downloads are valid, add the GPG key for the official Docker repository to your system:  
@@ -44,7 +44,6 @@ docker-ce:
 ### Configure environment variables
 2. If you want to change the backup frequency, just change the `FREQUENCY` parameter inside .env file
 3. The following options are available: `15min`, `hourly`, `daily`, `weekly` and `monthly`
-4. If you have any issues to execute the backup due to `Authentication plugin 'caching_sha2_password' cannot be loaded` error, please run the following command on the MySQL database: `ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'your_root_password';`
 5. The maximum historic size of backup files is given by the env variable `HIST_SIZE`, adjust it to your needs
 
 ### Execute all the services
