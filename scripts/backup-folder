@@ -18,7 +18,7 @@ TAIL_SIZE=$(($BKP_HIST_SIZE+2))
 
 FILE=$BACKUP_FOLDER/backup-data-$DATA_NAME-$NOW.tar.gz
 
-$TAR -zcvf $FILE $DATA_FOLDER/
+$TAR -zcvf $FILE -C $DATA_FOLDER .
 
 $LS -tp $BACKUP_FOLDER/ | $GREP -v '/$' | $GREP "backup-data-$DATA_NAME" |$TAIL -n +$TAIL_SIZE | $XARGS -I {} $RM -- $BACKUP_FOLDER/{}
 cp $FILE $BACKUP_FOLDER/backup-data-$DATA_NAME.tar.gz
