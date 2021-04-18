@@ -3,8 +3,6 @@ services:
     folder_autobackup:
         build:
             context: ./
-            args:
-                FREQUENCY: ${BKP_FREQUENCY}
         image: folder_autobkp:latest
         container_name: ${CONTAINER_NAME}
         labels:
@@ -12,7 +10,6 @@ services:
         env_file: .env
         volumes:
             - /etc/localtime:/etc/localtime:ro
-            - ${BACKUP_LOCATION}:/opt/backup
             - ${DATA_LOCATION}:/opt/data
         command: crond -f -d 8
         restart: always

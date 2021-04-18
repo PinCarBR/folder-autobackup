@@ -1,9 +1,10 @@
 #!/bin/sh
 
-BACKUP_FOLDER=/opt/backup
+BACKUP_FOLDER=/tmp/mysql/backup/$DATA_NAME
 DATA_FOLDER=/opt/data
 NOW=$(date +'%Y-%m-%dT%H%M%SZ')
 
+RCLONE=$(which rclone)
 GZIP=$(which gzip)
 TAR=$(which tar)
 LS=$(which ls)
@@ -11,14 +12,23 @@ GREP=$(which grep)
 TAIL=$(which tail)
 XARGS=$(which xargs)
 RM=$(which rm)
+CP=$(which cp)
+SORT=$(which sort)
 
-TAIL_SIZE=$(($BKP_HIST_SIZE+2))
+TAIL_SIZE=$(($BKP_HIST_SIZE+1))
 
 [ ! -d $BACKUP_FOLDER ] && mkdir --parents $BACKUP_FOLDER
 
-FILE=$BACKUP_FOLDER/backup-data-$DATA_NAME-$NOW.tar.gz
+FILE=$BACKUP_FOLDER/$DATA_NAME-$NOW.tar.gz
 
 $TAR -zcvf $FILE -C $DATA_FOLDER .
 
-$LS -tp $BACKUP_FOLDER/ | $GREP -v '/$' | $GREP "backup-data-$DATA_NAME" |$TAIL -n +$TAIL_SIZE | $XARGS -I {} $RM -- $BACKUP_FOLDER/{}
-cp $FILE $BACKUP_FOLDER/backup-data-$DATA_NAME.tar.gz
+$CP $FILE $BACKUP_FOLDER/$DATA_NAME.tar.gz
+
+$RCLONE copy $BACKUP_FOLDER/ $REMOTE_NAME://$REMOTE_PATH/$DATA_NAME/ --include $DATA_NAME*
+
+$RCLONE lsf $REMOTE_NAME://$REMOTE_PATH/$DATA_NAME/ --exclude $DATA_NAME.tar.gz | $GREP $DATA_NAME | $SORT -r | $TAIL -n +$TAIL_SIZE > $BACKUP_FOLDER/old_files
+
+$RCLONE delete $REMOTE_NAME://$REMOTE_PATH/$DATA_NAME/ --include-from $BACKUP_FOLDER/old_files
+
+$RM -rf $BACKUP_FOLDER
